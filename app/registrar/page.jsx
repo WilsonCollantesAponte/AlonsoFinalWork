@@ -1,6 +1,21 @@
-// import styles from "./registro.module.css";
+"use client";
+
+import { useState } from "react";
 
 export default function Registrar() {
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    address: "",
+    cellNumber: "",
+    password: "",
+  });
+
+  function handlePostUser(event) {
+    const { name, value } = event.target;
+    setUser({ ...user, [name]: value });
+  }
+
   return (
     <div className=" border-t-2 border-gray-600 p-10">
       <link
@@ -32,6 +47,8 @@ export default function Registrar() {
             className=" w-full"
             type="text"
             name="name"
+            value={user.name}
+            onChange={handlePostUser}
             placeholder="Nombre"
           />
         </div>
@@ -50,6 +67,8 @@ export default function Registrar() {
             className=" w-full"
             type="email"
             name="email"
+            value={user.email}
+            onChange={handlePostUser}
             placeholder="Correo"
           />
         </div>
@@ -67,7 +86,9 @@ export default function Registrar() {
           <input
             className=" w-full"
             type="text"
-            name="direction"
+            name="address"
+            value={user.address}
+            onChange={handlePostUser}
             placeholder="Direccion"
           />
         </div>
@@ -85,7 +106,9 @@ export default function Registrar() {
           <input
             className=" w-full"
             type="tel"
-            name="phone"
+            name="cellNumber"
+            value={user.cellNumber}
+            onChange={handlePostUser}
             placeholder="Telefono"
           />
         </div>
@@ -104,11 +127,44 @@ export default function Registrar() {
             className=" w-full"
             type="password"
             name="password"
+            value={user.password}
+            onChange={handlePostUser}
             placeholder="Contraseña"
           />
         </div>
 
-        <button className=" bg-gradient-to-r from-indigo-500 to-indigo-800 text-white font-semibold py-3 rounded">
+        <button
+          className=" bg-gradient-to-r from-indigo-500 to-indigo-800 text-white font-semibold py-3 rounded"
+          onClick={(e) => {
+            e.preventDefault();
+            if (
+              !user.address ||
+              !user.cellNumber ||
+              !user.email ||
+              !user.name ||
+              !user.password
+            )
+              return alert("No se permiten campos vacios");
+            fetch("/registrar/api", {
+              method: "POST",
+              body: JSON.stringify(user),
+            })
+              .then((r) => r.json())
+              .then((r) => {
+                if (!r) return alert("Este email ya existe");
+                else {
+                  setUser({
+                    name: "",
+                    email: "",
+                    address: "",
+                    cellNumber: "",
+                    password: "",
+                  });
+                  alert("Usuario creado");
+                }
+              });
+          }}
+        >
           Enviar
         </button>
       </form>
